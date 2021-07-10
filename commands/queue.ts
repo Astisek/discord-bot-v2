@@ -13,7 +13,7 @@ export const queue = async (serverQueue: IQueue) => {
 
   serverQueue.songs.forEach((el, index) => {
     embed.addField(
-      `${index + 1}. ${el.title} ${(index === 0 && `(Текущий)`)}`,
+      `${index + 1}. ${el.title} ${(index === 0 ? `(Текущий)` : '')}`,
       `Длительность: ${fancyTimeFormat(el.length)}`
     )
   })

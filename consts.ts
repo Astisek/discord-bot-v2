@@ -10,6 +10,7 @@ export type ISong = {
   title: string
   url: string
   length: number
+  image: string
 }
 
 export type IQueue = {
@@ -23,11 +24,14 @@ export type IQueue = {
 
   connection: Discord.VoiceConnection | null, 
   dispatcher: Discord.StreamDispatcher | null,
+  delete: () => void
   
   finding: Map<string, any>
+
+  disconnectTimeOut?: NodeJS.Timeout,
 }
 
-export const serverQueueExample = (message: Discord.Message): IQueue => ({
+export const serverQueueExample = (message: Discord.Message, globalQueue: Map<string, IQueue>): IQueue => ({
   textChannel: message.channel,
   voiceChannel: message.member?.voice.channel as Discord.VoiceChannel,
   connection: null, 
@@ -38,5 +42,6 @@ export const serverQueueExample = (message: Discord.Message): IQueue => ({
   finding: new Map(),
   repeat: false,
   skippedTime: 0,
+  delete: () => globalQueue.delete(message.guild?.id || '')
 })
 

@@ -1,18 +1,26 @@
+import { startAutoDisconnect } from './startAutoDisconnect';
 import ytdl from 'discord-ytdl-core';
 import { IQueue, ISong, SongTypeEnum } from '../consts';
 import Discord from 'discord.js';
 
 export const startMusic = async (serverQueue: IQueue, seekTImeSec?: number) => {
   serverQueue.playing = true
+  clearTimeout(serverQueue.disconnectTimeOut as unknown as number)
 
-  serverQueue.dispatcher = serverQueue.connection?.play(streamSelection(serverQueue.songs[0], seekTImeSec), {volume: serverQueue.volume, type: 'opus'}) as Discord.StreamDispatcher
+  serverQueue.dispatcher = serverQueue.connection?.play(
+    streamSelection(serverQueue.songs[0], seekTImeSec), 
+    {volume: serverQueue.volume, type: 'opus'}
+  ) as Discord.StreamDispatcher
   
   serverQueue.dispatcher.on('finish', () => {
     serverQueue.skippedTime = 0
     if (!serverQueue.repeat) serverQueue.songs.shift()
     
     if (serverQueue.songs.length != 0) startMusic(serverQueue)
-    else serverQueue.playing = false;
+    else {
+      serverQueue.playing = false;
+      startAutoDisconnect(serverQueue)
+    }
   });
 
 }

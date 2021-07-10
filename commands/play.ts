@@ -31,15 +31,17 @@ const youtube = async (url: string, serverQueue: IQueue) => {
     const res = await ytdl.getInfo(url)
     const title = res.videoDetails.title
     const length = +res.videoDetails.lengthSeconds
+    const image = res.videoDetails.thumbnails[res.videoDetails.thumbnails.length - 1].url
     
     serverQueue.songs.push({
       length,
       title,
       type: SongTypeEnum.youtube,
-      url
+      url,
+      image,
     })
   
-    sendAddSongEmbeded(serverQueue.textChannel, title, url, length)
+    sendAddSongEmbeded(serverQueue.textChannel, title, url, length, image)
 
   } catch (e) {
     createError(serverQueue, e.message)
@@ -82,17 +84,20 @@ export const searchSelect = async (id: string, serverQueue: IQueue, userId: stri
       const url = `https://www.youtube.com/watch?v=${videoId}`
 
       const res = await ytdl.getInfo(url)
+      
       const title = res.videoDetails.title
       const length = +res.videoDetails.lengthSeconds
+      const image = res.videoDetails.thumbnails[res.videoDetails.thumbnails.length - 1].url
       
       serverQueue.songs.push({
         length,
         title,
         type: SongTypeEnum.youtube,
-        url
+        url,
+        image,
       })
 
-      sendAddSongEmbeded(serverQueue.textChannel, title, url, length)
+      sendAddSongEmbeded(serverQueue.textChannel, title, url, length, image)
 
       if (!serverQueue.playing && serverQueue.songs.length) startMusic(serverQueue)
 
@@ -111,17 +116,13 @@ const sendAddSongEmbeded = (
     textChannel: Discord.TextChannel | Discord.DMChannel | Discord.NewsChannel, 
     title: string, 
     url: string, 
-    length: number
+    length: number,
+    image: string
   ) => {
-  
-  const exampleEmbed = createEmbed('Add', 'Added to queue')
-  .addFields([{ 
-    name: title, 
-    value: url 
-  }, {
-    name: "Длительность: ",
-    value: fancyTimeFormat(length)
-  }])
+  const exampleEmbed = createEmbed('Добавлено в очередь')
+    .addField(title, url)
+    .setImage(image)
+    .setFooter(`Длительность: ${fancyTimeFormat(length)}`)
 
   textChannel.send(exampleEmbed)
 }
