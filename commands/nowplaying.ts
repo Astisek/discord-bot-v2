@@ -14,10 +14,10 @@ export const nowPlaying = async (serverQueue: IQueue) => {
   let lengthString = ''
 
   for (let i = 0; i < 20; i++) {
-    lengthString += currentPos === i ? "|" : '-'
+    lengthString += currentPos === i ? "।" : '‒'
   }  
 
-  const embed = createEmbed('Сейчас воспроизводиться', 'Текущий трек:')
+  const embed = createEmbed('Сейчас воспроизводится', 'Текущий трек:')
   embed.addField(currentSong.title, currentSong.url)
   embed.addField(
     'Длительность:', 

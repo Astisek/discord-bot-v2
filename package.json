@@ -23,6 +23,6 @@
     "dotenv": "^8.2.0",
     "ffmpeg-static": "^4.3.0",
     "youtube-api-v3-search": "^1.2.1",
-    "ytdl-core": "^4.5.0"
+    "ytdl-core": "^4.9.1"
   }
 }
