@@ -47,6 +47,7 @@ const youtube = async (url: string, serverQueue: IQueue) => {
 
     sendAddSongEmbeded(serverQueue.textChannel, title, url, length, image);
   } catch (e) {
+    // @ts-ignore
     createError(serverQueue, e.message);
   }
 };
@@ -80,6 +81,7 @@ const search = async (
       message: await serverQueue.textChannel.send(exampleEmbed),
     });
   } catch (e) {
+    // @ts-ignore
     createError(serverQueue, e.message);
   }
 };
@@ -116,6 +118,7 @@ export const searchSelect = async (
       if (!serverQueue.playing && serverQueue.songs.length)
         startMusic(serverQueue);
     } catch (e) {
+      // @ts-ignore
       createError(serverQueue, e.message);
     }
   } else serverQueue.textChannel.send(":cl:  Поиск отменён");
