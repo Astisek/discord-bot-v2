@@ -1,5 +1,6 @@
 import { createEmbed } from './../func/createEmbed';
 import Discord from 'discord.js'
+import { log } from '../func/log';
 
 export const help = (message: Discord.Message) => {
   const textchannel = message.channel
@@ -37,5 +38,6 @@ export const help = (message: Discord.Message) => {
   ])
 
   textchannel.send(embed)
+  log("Help")
 }
 

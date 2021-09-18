@@ -1,3 +1,5 @@
+import { endAutoDisconnect } from './../func/autoDisconnect';
+import { playMusic } from './../func/playMusic';
 import { createError } from "./../func/createError";
 import { fancyTimeFormat } from "./../func/fancyTime";
 import { startMusic } from "./../func/startMusic";
@@ -6,6 +8,7 @@ import { IQueue, SongTypeEnum } from "../consts";
 import Discord from "discord.js";
 import ytdl from "discord-ytdl-core";
 import { createEmbed } from "../func/createEmbed";
+import { log } from '../func/log';
 const searchYoutube = require("youtube-api-v3-search");
 
 export const play = async (
@@ -13,8 +16,8 @@ export const play = async (
   args: string[],
   serverQueue: IQueue
 ) => {
-  await join(serverQueue);
-  if (!serverQueue.connection) return
+  await join(serverQueue, message);
+  log(`Play ${args.toString()}`)
 
   if (args[0].startsWith("https://www.youtube.com/"))
     await youtube(args[0], serverQueue);
@@ -26,10 +29,14 @@ export const play = async (
     );
   } else await search(args.join(" "), serverQueue, message);
 
-  if (!serverQueue.playing && serverQueue.songs.length) startMusic(serverQueue);
+  endAutoDisconnect(serverQueue)
+  message.delete()
+
+  playMusic(serverQueue)
 };
 
 const youtube = async (url: string, serverQueue: IQueue) => {
+  log(`Воспроизведение через youtube: ${url}`)
   try {
     const res = await ytdl.getInfo(url);
     const title = res.videoDetails.title;
@@ -46,8 +53,7 @@ const youtube = async (url: string, serverQueue: IQueue) => {
     });
 
     sendAddSongEmbeded(serverQueue.textChannel, title, url, length, image);
-  } catch (e) {
-    // @ts-ignore
+  } catch (e: any) {
     createError(serverQueue, e.message);
   }
 };
@@ -57,6 +63,7 @@ const search = async (
   serverQueue: IQueue,
   message: Discord.Message
 ) => {
+  log(`Поиск по youtube: ${q}`)
   var options = {
     q,
     part: "snippet",
@@ -80,8 +87,7 @@ const search = async (
       res,
       message: await serverQueue.textChannel.send(exampleEmbed),
     });
-  } catch (e) {
-    // @ts-ignore
+  } catch (e: any) {
     createError(serverQueue, e.message);
   }
 };
@@ -91,6 +97,7 @@ export const searchSelect = async (
   serverQueue: IQueue,
   userId: string
 ) => {
+  log(`Обработка id поиска: ${id}`)
   if (!(id === "cancel" || id === "c")) {
     const videoId =
       serverQueue.finding.get(userId).res.items[+id - 1].id.videoId;
@@ -117,8 +124,7 @@ export const searchSelect = async (
 
       if (!serverQueue.playing && serverQueue.songs.length)
         startMusic(serverQueue);
-    } catch (e) {
-      // @ts-ignore
+    } catch (e: any) {
       createError(serverQueue, e.message);
     }
   } else serverQueue.textChannel.send(":cl:  Поиск отменён");
@@ -127,7 +133,7 @@ export const searchSelect = async (
   serverQueue.finding.delete(userId);
 };
 
-const sendAddSongEmbeded = (
+export const sendAddSongEmbeded = (
   textChannel: Discord.TextChannel | Discord.DMChannel | Discord.NewsChannel,
   title: string,
   url: string,

@@ -1,8 +1,14 @@
+import { notConnected } from './func/notConnected';
 import Discord from 'discord.js'
 
 export enum SongTypeEnum {
   youtube = "YOUTUBE",
   custom = "CUSTOM",
+}
+
+export enum ImageEnum {
+  customTrackRandom = "https://i.ibb.co/nsNZHyh/ezgif-2-3f16e04466e5.gif",
+  customTrack = "https://i.ibb.co/LJSgzXY/1528742576-untitled.png"
 }
 
 export type ISong = {
@@ -45,3 +51,10 @@ export const serverQueueExample = (message: Discord.Message, globalQueue: Map<st
   delete: () => globalQueue.delete(message.guild?.id || '')
 })
 
+export const updateVoice = (serverQueue: IQueue, message: Discord.Message) => {
+  const voiceChannel = message.member?.voice.channel as Discord.VoiceChannel
+  
+  if (!voiceChannel) return notConnected(serverQueue.textChannel)
+
+  serverQueue.voiceChannel = voiceChannel 
+}

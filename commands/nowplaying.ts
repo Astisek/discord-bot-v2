@@ -2,9 +2,11 @@ import { nothingPlaying } from './../func/nothingPlaying';
 import { fancyTimeFormat } from './../func/fancyTime';
 import { createEmbed } from './../func/createEmbed';
 import { IQueue } from '../consts';
+import { log } from '../func/log';
 
 export const nowPlaying = async (serverQueue: IQueue) => {
   if (!serverQueue.playing) return nothingPlaying(serverQueue.textChannel)
+  log("Начало now playing")
 
   const currentSong = serverQueue.songs[0]
   const streemTime = ~~((serverQueue.dispatcher?.streamTime as number / 1000) + serverQueue.skippedTime)
@@ -25,4 +27,5 @@ export const nowPlaying = async (serverQueue: IQueue) => {
   )
 
   serverQueue.textChannel.send(embed)
+  log("Конец now playing")
 }
