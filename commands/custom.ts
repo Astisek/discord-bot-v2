@@ -1,3 +1,4 @@
+import { endAutoDisconnect } from './../func/autoDisconnect';
 import { sendAddSongEmbeded } from "./play";
 import { playMusic } from "./../func/playMusic";
 import { join } from "./join";
@@ -40,6 +41,7 @@ export const custom = async (
     song.image
   );
   
+  endAutoDisconnect(serverQueue)
   playMusic(serverQueue);
   log("Конец custom")
 };
