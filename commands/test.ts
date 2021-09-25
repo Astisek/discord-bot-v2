@@ -1,6 +1,6 @@
 import { IQueue } from '../consts';
 import Discord from 'discord.js';
-import { send } from '../func/send';
+import { send } from '../func/chatActions/send';
 
 export const test = async (message: Discord.Message, args: string[], serverQueue: IQueue) => {
   console.log(serverQueue)

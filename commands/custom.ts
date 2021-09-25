@@ -1,10 +1,10 @@
 import { endAutoDisconnect } from './../func/autoDisconnect';
-import { sendAddSongEmbeded } from "./play";
 import { playMusic } from "./../func/playMusic";
 import { join } from "./join";
 import Discord from "discord.js";
 import { ImageEnum, IQueue, SongTypeEnum } from "./../consts";
 import { log } from "../func/log";
+import { sendAddSongEmbeded } from '../func/chatActions/addSong';
 
 export const custom = async (
   serverQueue: IQueue,

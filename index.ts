@@ -6,7 +6,7 @@ import { repeat } from "./commands/repeat";
 import { resume } from "./commands/resume";
 import { pause } from "./commands/pause";
 import { skip } from "./commands/skip";
-import { play, searchSelect } from "./commands/play";
+import { play } from "./commands/play";
 import { leave } from "./commands/leave";
 import { join } from "./commands/join";
 import { IQueue, serverQueueExample } from "./consts";
@@ -17,6 +17,8 @@ import { help } from "./commands/help";
 import { clear } from "./commands/clear";
 import { test } from "./commands/test";
 import { custom } from './commands/custom';
+import { searchSelect } from './commands/play/search';
+import { autoPlay } from './commands/autoplay';
 
 dotenv.config();
 const prefix = process.env.PREFIX || "s";
@@ -30,7 +32,7 @@ client.on("ready", () => {
 
 client.on("message", async (message) => {
   // Автор не бот
-  if (message.author.bot) return;
+  if (message.author.bot) return; // p, https://youtube.com/sdfdsfsdfsd
 
   // Парс команды
   const content = message.content.replace(prefix, "");
@@ -115,6 +117,10 @@ client.on("message", async (message) => {
     case "custom": 
     case "c": 
       custom(serverQueue, message, args)
+      break
+    case "autoplay": 
+    case "ap": 
+      autoPlay(serverQueue)
       break
     case "help":
       help(message);

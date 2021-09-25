@@ -1,6 +1,6 @@
-import { nothingPlaying } from './../func/nothingPlaying';
+import { nothingPlaying } from '../func/chatActions/nothingPlaying';
 import { fancyTimeFormat } from './../func/fancyTime';
-import { createEmbed } from './../func/createEmbed';
+import { createEmbed } from '../func/chatActions/createEmbed';
 import { IQueue } from '../consts';
 import { log } from '../func/log';
 

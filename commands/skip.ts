@@ -1,4 +1,4 @@
-import { nothingPlaying } from './../func/nothingPlaying';
+import { nothingPlaying } from '../func/chatActions/nothingPlaying';
 import { IQueue } from '../consts';
 import { log } from '../func/log';
 

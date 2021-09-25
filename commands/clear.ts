@@ -1,6 +1,6 @@
-import { createEmbed } from './../func/createEmbed';
+import { createEmbed } from '../func/chatActions/createEmbed';
 import { IQueue } from './../consts';
-import { send } from '../func/send';
+import { send } from '../func/chatActions/send';
 import { log } from '../func/log';
 
 export const clear = (serverQueue: IQueue) => {

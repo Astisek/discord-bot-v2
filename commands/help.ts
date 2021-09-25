@@ -1,4 +1,4 @@
-import { createEmbed } from './../func/createEmbed';
+import { createEmbed } from '../func/chatActions/createEmbed';
 import Discord from 'discord.js'
 import { log } from '../func/log';
 

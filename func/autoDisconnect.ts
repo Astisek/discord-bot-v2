@@ -13,4 +13,5 @@ export const startAutoDisconnect = (serverQueue: IQueue)  => {
 export const endAutoDisconnect = (serverQueue: IQueue) => {
   log('Auto disconnect остановлен')
   clearTimeout(serverQueue.disconnectTimeOut as NodeJS.Timeout)
+  serverQueue.disconnectTimeOut = undefined
 }

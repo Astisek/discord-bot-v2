@@ -1,4 +1,4 @@
-import { notConnected } from './../func/notConnected';
+import { notConnected } from '../func/chatActions/notConnected';
 import { IQueue } from '../consts';
 import { log } from '../func/log';
 
