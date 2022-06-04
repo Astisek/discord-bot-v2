@@ -5,7 +5,7 @@ import { IChannel, ISong } from "./model";
 
 const SongSchema = new Schema<ISong>({
   image: { type: "String", required: true },
-  length: { type: "Number", required: true },
+  songLength: { type: "Number", required: true },
   title: { type: "String", required: true },
   inputType: { type: "String", required: true },
   url: { type: "String", required: true },
@@ -14,7 +14,6 @@ const SongSchema = new Schema<ISong>({
 const schema = new Schema<IChannel>({
   autoPlay: { type: "Boolean", required: true },
   channelId: { type: "String", required: true },
-  playing: { type: "Boolean", required: true },
   repeat: { type: "Boolean", required: true },
   skippedTime: { type: "Number", required: true },
   songs: [SongSchema],

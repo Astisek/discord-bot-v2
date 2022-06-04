@@ -1,5 +1,5 @@
 import { IChannel } from './Channel/model';
-import { getVoiceConnection, joinVoiceChannel, VoiceConnection } from '@discordjs/voice';
+import { getVoiceConnection, joinVoiceChannel, VoiceConnection, VoiceConnectionReadyState } from '@discordjs/voice';
 import { Guild, Message } from 'discord.js';
 import { client } from '..';
 import Notification from '../service/Notification';
@@ -45,6 +45,21 @@ class EmptyCommand {
       embeds: [embed],
     });
   };
+  protected sendSecondaryEmbed = async (
+    title: string,
+    desc?: string,
+    callback?: (embed: Discord.MessageEmbed) => void,
+    color?: [number, number, number],
+  ) => {
+    this.sendEmbed(title, desc, (embed) => {
+      embed.setColor(color || '#32b1e2');
+      if (callback) callback(embed);
+    });
+  };
+  protected onError = (e: any) => {
+    this.sendMessage(e.message);
+    console.log(e);
+  }
 
   protected connectToVoice = async () => {
     if (this.guild) {
@@ -55,10 +70,15 @@ class EmptyCommand {
           adapterCreator: this.guild.voiceAdapterCreator,
         });
       } catch (e) {
-        console.log(e);
+        this.onError(e)
       }
     }
   };
+
+  protected get player() {
+    const state = this.voiceConnection?.state as VoiceConnectionReadyState
+    return state.subscription?.player
+  }
 }
 
 export default EmptyCommand;
