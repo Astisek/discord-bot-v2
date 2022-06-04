@@ -20,8 +20,9 @@ class ChannelInstance {
   private getChannel = async () => {
     if (this.guildId) {
       const channel = await Channel.findOne({ channelId: this.guildId });
+      const voiceGuildId = this.message.member?.voice.channelId || ""
       if (channel) {
-        channel.voiceChannel = this.message.member?.voice.channelId || "";
+        channel.voiceChannel = voiceGuildId;
         channel.textChannel = this.message.channelId;
         await channel.save();
         return channel;
@@ -35,7 +36,7 @@ class ChannelInstance {
         skippedTime: 0,
         songs: [],
         textChannel: this.message.channelId,
-        voiceChannel: this.message.member?.voice.channelId || "",
+        voiceChannel: voiceGuildId,
         volume: 1,
       });
       await newChannel.save();
@@ -49,7 +50,7 @@ class ChannelInstance {
     const [command, ...args] = this.parseCommand();
     const channel = await this.getChannel();
     if (channel) {
-      new ExecuteCommand(command, args, channel);
+      new ExecuteCommand(command, args, channel, this.message);
     }
   };
 }

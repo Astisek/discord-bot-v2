@@ -1,5 +1,4 @@
 import {Document, Model} from "mongoose";
-import { ISong } from "../Song/model";
 
 export interface IChannel extends Document {
   channelId: string;
@@ -13,4 +12,15 @@ export interface IChannel extends Document {
   autoPlay: boolean;
 }
 
-export type IChannelModel = IChannel
+export enum SongTypeEnum {
+  youtube = "YOUTUBE",
+  custom = "CUSTOM",
+}
+
+export type ISong = {
+  inputType: SongTypeEnum;
+  title: string;
+  url: string;
+  length: number;
+  image: string;
+};

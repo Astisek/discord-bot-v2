@@ -1,6 +1,15 @@
 import mongoose, { Schema } from "mongoose";
+
 import { SchemasEnum } from "..";
-import { IChannel } from "./model";
+import { IChannel, ISong } from "./model";
+
+const SongSchema = new Schema<ISong>({
+  image: { type: "String", required: true },
+  length: { type: "Number", required: true },
+  title: { type: "String", required: true },
+  inputType: { type: "String", required: true },
+  url: { type: "String", required: true },
+});
 
 const schema = new Schema<IChannel>({
   autoPlay: { type: "Boolean", required: true },
@@ -8,7 +17,7 @@ const schema = new Schema<IChannel>({
   playing: { type: "Boolean", required: true },
   repeat: { type: "Boolean", required: true },
   skippedTime: { type: "Number", required: true },
-  songs: [{ type: Schema.Types.ObjectId, ref: SchemasEnum.SONG }],
+  songs: [SongSchema],
   textChannel: { type: "String", required: true },
   voiceChannel: { type: "String", required: true },
   volume: { type: "Number", required: true },

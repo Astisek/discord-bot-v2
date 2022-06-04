@@ -1,32 +1,33 @@
+import { Message } from 'discord.js';
 import {Document} from "mongoose";
 import Join from "../actions/Join";
 import Leave from "../actions/Leave";
 import Play from "../actions/Play";
-import {IChannelModel} from "../models/Channel/model";
+import { IChannel } from "../models/Channel/model";
 import EmptyCommand from "../models/EmptyCommand";
 
 class ExecuteCommand {
-  private channel: IChannelModel
+  private channel: IChannel
   private args: string[];
-  private command?: EmptyCommand;
+  private Command?: typeof EmptyCommand;
 
-  constructor(command: string, args: string[], channel: IChannelModel) {
+  constructor(command: string, args: string[], channel: IChannel, protected message: Message) {
     this.channel = channel;
     this.args = args;
     switch (command.toLowerCase()) {
       case "join":
       case "j":
-        this.command = new Join(channel, args);
+        this.Command = Join
         break;
 
       case "leave":
       case "l":
-        this.command = new Leave(channel, args);
+        this.Command = Leave
         break;
 
       case "play":
       case "p":
-        this.command = new Play(channel, args);
+        this.Command = Play
         break;
       case "s":
         //   skip(serverQueue);
@@ -84,7 +85,11 @@ class ExecuteCommand {
         //   test(message, args, serverQueue);
         //   break;
     }
-    this.command?.execute();
+    if (this.Command) {
+      const command = new this.Command(channel, args, message)
+      command?.execute();
+    }
+    
   }
 }
 
