@@ -1,15 +1,17 @@
 import EmptyCommand from '../../models/EmptyCommand';
-import Join from '../Join';
 import querystring from 'querystring';
 import ytdl from 'ytdl-core-discord';
 import { fancyTimeFormat } from '../../helpers/fancyTime';
 import { SongTypeEnum } from '../../models/Channel/model';
-import MusicPlayer from '../../service/MusicPlayer';
 import ytpl from 'ytpl';
+import Search from '../../models/Search';
+import { MAX_SEARCH_POSITION, YOUTUBE_API } from '../../consts/app';
+const searchYoutube = require('youtube-api-v3-search');
 
 class Play extends EmptyCommand {
   public execute = async () => {
     await this.connectToVoice();
+    this.logger('Connected to Voice')
     const url = this.args[0];
 
     if (url.startsWith('https://www.youtube.com/')) {
@@ -18,13 +20,11 @@ class Play extends EmptyCommand {
       const array = url.split('/');
       await this.playYoutube(`https://www.youtube.com/watch?v=${array[array.length - 1]}`);
     } else {
+      await this.playSearch(this.args.join(' '));
     }
 
     this.message.delete();
-    if (!this.player && this.channel.songs.length) {
-      const player = new MusicPlayer(this.channel, this.voiceConnection, this.player);
-      await player.start();
-    }
+    await this.startPlayerIfNeed()
   };
 
   private playYoutube = async (url: string) => {
@@ -45,11 +45,11 @@ class Play extends EmptyCommand {
         ...song,
         inputType: SongTypeEnum.youtube,
       });
-      await this.channel.save();
 
       const { title, image, songLength } = song;
+      this.logger(`Play by url (${url})`)
       await this.sendAddSongEmbed(title, url, image, autoPlay, songLength);
-    } catch (e: any) {
+    } catch (e) {
       this.onError(e);
     }
   };
@@ -105,13 +105,52 @@ class Play extends EmptyCommand {
         });
       });
 
+      this.logger(`Play by playlist (${items.length} tracks)`)
+
       await this.sendSecondaryEmbed('Добавлено в очередь', `Плейлист: ${title}`, (embed) => {
         embed.setImage(bestThumbnail.url || '').setFooter({
           text: `Количество треков: ${estimatedItemCount}`,
         });
       });
-      this.channel.save();
-    } catch (e: any) {
+    } catch (e) {
+      this.onError(e);
+    }
+  };
+
+  private playSearch = async (q: string) => {
+    const options = {
+      q,
+      part: 'snippet',
+      type: 'video',
+      maxResults: MAX_SEARCH_POSITION,
+    };
+
+    try {
+      const res = await searchYoutube(YOUTUBE_API, options);
+
+      const sendedEmbed = await this.sendEmbed(
+        'Search',
+        'Write your choice in the chat',
+        (embed) => {
+          for (let i = 0; i < res.items.length; i++) {
+            embed.addField(
+              `${i + 1}: ${res.items[i].snippet.title}`,
+              res.items[i].snippet.channelTitle,
+            );
+          }
+          embed.setFooter({
+            text: 'Чтобы отменить поиск введите: "c" или "cancel"',
+          });
+        },
+      );
+      this.logger(`Play by search (${q})`)
+      const searchResult = new Search({
+        author: this.message.member?.id,
+        results: res.items.map((el: any) => el.id.videoId),
+        messageId: sendedEmbed.id,
+      });
+      await searchResult.save();
+    } catch (e) {
       this.onError(e);
     }
   };

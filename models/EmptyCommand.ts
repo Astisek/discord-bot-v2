@@ -1,9 +1,12 @@
 import { IChannel } from './Channel/model';
-import { getVoiceConnection, joinVoiceChannel, VoiceConnection, VoiceConnectionReadyState } from '@discordjs/voice';
+import { AudioPlayerPlayingState, getVoiceConnection, joinVoiceChannel, VoiceConnection, VoiceConnectionReadyState } from '@discordjs/voice';
 import { Guild, Message } from 'discord.js';
 import { client } from '..';
 import Notification from '../service/Notification';
 import Discord from 'discord.js';
+import { ICommandPostActions } from '.';
+import MusicPlayer from '../service/MusicPlayer';
+import { logger } from '../service/logger';
 
 class EmptyCommand {
   protected guild?: Guild;
@@ -19,11 +22,11 @@ class EmptyCommand {
     }
   }
 
-  public execute = async () => {
+  public execute = async (): Promise<ICommandPostActions | void> => {
     console.log('empty command');
   };
   protected sendMessage = (text: string | Discord.MessagePayload | Discord.MessageOptions) => {
-    Notification.send(this.channel, text);
+    return Notification.send(this.channel, text);
   };
   protected sendEmbed = async (
     title: string,
@@ -41,7 +44,7 @@ class EmptyCommand {
           'https://vignette.wikia.nocookie.net/baccano/images/9/90/E12_Ennis.png/revision/latest?cb=20170227231754',
       });
     if (callback) callback(embed);
-    this.sendMessage({
+    return this.sendMessage({
       embeds: [embed],
     });
   };
@@ -76,8 +79,28 @@ class EmptyCommand {
   };
 
   protected get player() {
-    const state = this.voiceConnection?.state as VoiceConnectionReadyState
-    return state.subscription?.player
+    const state = this.voiceConnection?.state as VoiceConnectionReadyState | undefined
+    return state?.subscription?.player
+  }
+  protected unsubscribePlayer = () => {
+    const state = this.voiceConnection?.state as VoiceConnectionReadyState | undefined
+    state?.subscription?.unsubscribe()
+  }
+  protected get playerState() {
+    return this.player?.state as Partial<AudioPlayerPlayingState> | undefined 
+  }
+  protected async startPlayerIfNeed() {
+    if (!this.player && this.channel.songs.length >= 1) {
+      this.logger(`StartPlayerIfNeed true`)
+      const player = new MusicPlayer(this.channel, this.voiceConnection, this.player);
+      await player.start();
+    }
+    else {
+      this.logger(`StartPlayerIfNeed false ${!!this.player} ${this.channel.songs.length}`)
+    }
+  }
+  protected logger(text: string) {
+    logger.debug(`${this.channel.id}: ${text}`)
   }
 }
 

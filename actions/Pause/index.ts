@@ -4,6 +4,7 @@ import EmptyCommand from '../../models/EmptyCommand';
 class Pause extends EmptyCommand {
   public execute = async () => {
     this.player?.pause()
+    this.logger('Paused')
   };
 }
 

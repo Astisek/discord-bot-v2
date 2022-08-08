@@ -21,5 +21,5 @@ export type ISong = {
   title: string;
   url: string;
   songLength: number;
-  image: string;
+  image: string | null;
 };

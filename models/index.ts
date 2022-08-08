@@ -1,4 +1,8 @@
 export enum SchemasEnum {
   CHANNEL = 'Channel',
-  SONG = 'Song'
+  SEARCH = 'Search',
+}
+
+export interface ICommandPostActions {
+  dontSave: boolean
 }

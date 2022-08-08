@@ -1,21 +1,30 @@
-import { Client, Intents } from "discord.js";
-import {MONGO_URL, TOKEN} from "./consts/app";
-import ChannelInstance from "./service/ChannelInstance";
-import Mongo from "./service/Mongo";
+import { Client, Intents } from 'discord.js';
+import { MONGO_URL, TOKEN } from './consts/app';
+import ChannelInstance from './service/ChannelInstance';
+import { logger } from './service/logger';
+import Mongo from './service/Mongo';
+import ffmpeg from 'ffmpeg-static'
+import fluentFfmpeg from 'fluent-ffmpeg'
+
+fluentFfmpeg.setFfmpegPath(ffmpeg)
 
 export const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES],
 });
 
-const mongo = new Mongo(MONGO_URL)
+new Mongo(MONGO_URL);
 
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user?.tag}!`)
-})
+  logger.debug(`Logged in as ${client.user?.tag}!`)
+});
+
+client.on('multipleResolves', (_, __, reason) => {
+  if (reason.toLocaleString() === 'Error: Cannot perform IP discovery - socket closed') return;
+});
 
 client.on('message', (message) => {
-  const instance = new ChannelInstance(message) 
-  instance.checkMessage()
-})
+  const instance = new ChannelInstance(message);
+  instance.checkMessage();
+});
 
-client.login(TOKEN)
+client.login(TOKEN);

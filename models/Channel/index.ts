@@ -4,7 +4,7 @@ import { SchemasEnum } from "..";
 import { IChannel, ISong } from "./model";
 
 const SongSchema = new Schema<ISong>({
-  image: { type: "String", required: true },
+  image: { type: "String", required: false },
   songLength: { type: "Number", required: true },
   title: { type: "String", required: true },
   inputType: { type: "String", required: true },

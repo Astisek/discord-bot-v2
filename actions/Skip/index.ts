@@ -4,14 +4,18 @@ import MusicPlayer from '../../service/MusicPlayer';
 class Skip extends EmptyCommand {
   public execute = async () => {
     try {
+      this.logger(`Skip (current length: ${this.channel.songs.length})`)
       if (this.channel.songs.length) {
         this.channel.songs.shift();
         if (this.channel.songs.length) {
           const player = new MusicPlayer(this.channel, this.voiceConnection, this.player);
-
-          player.start();
+          await player.start();
         }
-        this.channel.save();
+        else {
+          this.logger('Player stoped')
+          this.player?.stop();
+          this.unsubscribePlayer()
+        }
       }
     } catch (e) {
       this.onError(e);
