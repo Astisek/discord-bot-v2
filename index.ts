@@ -3,10 +3,6 @@ import { MONGO_URL, TOKEN } from './consts/app';
 import ChannelInstance from './service/ChannelInstance';
 import { logger } from './service/logger';
 import Mongo from './service/Mongo';
-import ffmpeg from 'ffmpeg-static'
-import fluentFfmpeg from 'fluent-ffmpeg'
-
-fluentFfmpeg.setFfmpegPath(ffmpeg)
 
 export const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES],

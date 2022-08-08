@@ -5,6 +5,7 @@ class Skip extends EmptyCommand {
   public execute = async () => {
     try {
       this.logger(`Skip (current length: ${this.channel.songs.length})`)
+      this.channel.skippedTime = 0;
       if (this.channel.songs.length) {
         this.channel.songs.shift();
         if (this.channel.songs.length) {

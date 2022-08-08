@@ -1,4 +1,3 @@
-import ytdl from 'ytdl-core-discord';
 import {
   AudioPlayer,
   VoiceConnection,
@@ -7,12 +6,12 @@ import {
   AudioPlayerStatus,
   createAudioPlayer,
 } from '@discordjs/voice';
-import fluentFfmpeg from 'fluent-ffmpeg'
+import ytdl from 'ytdl-core';
 
 import Channel from '../models/Channel';
 
-import { fancyTimeFormat } from './../helpers/fancyTime';
 import { IChannel, ISong, SongTypeEnum } from '../models/Channel/model';
+import {createFFmpegStream} from './ffmpegStream';
 import { logger } from './logger';
 
 class MusicPlayer {
@@ -23,25 +22,28 @@ class MusicPlayer {
   ) {}
 
   public start = async () => {
-    const stream = await this.streamSelection(this.channel.songs[0], this.channel.skippedTime);
+    const stream = this.streamSelection(this.channel.songs[0], this.channel.skippedTime);
     this.logger(`Stream Selected ${`with skip time ${this.channel.skippedTime}`}`)
 
     if (!this.player) {
       this.player = createAudioPlayer();
-      this.voiceConnection?.subscribe(this.player);
       this.player.on(AudioPlayerStatus.Idle, this.endMusicHandler);
       this.player.on('error', (e) => console.log(e))
       this.player.on('debug', (e) => console.log(e))
       this.logger('New Player Created')
     }
-    let editedStream = fluentFfmpeg({source: stream}).audioCodec('libopus').setStartTime(this.channel.skippedTime).toFormat('ogg')
-    // @ts-ignore
-    const resource = createAudioResource(editedStream, {
-      inputType: StreamType.Opus,
-      inlineVolume: true,
+
+    const ffmpegStream = createFFmpegStream(stream, {
+      seek: this.channel.skippedTime || 0,
+      fmt: "s16le"
+    })
+
+    const resource = createAudioResource(ffmpegStream, {
+      inputType: StreamType.Raw
     });
     this.logger('Resource created')
     resource.volume?.setVolume(this.channel.volume)
+    this.voiceConnection?.subscribe(this.player);
     this.player.play(resource);
     this.logger('Played')
   };
@@ -65,10 +67,8 @@ class MusicPlayer {
     switch (song.inputType) {
       case SongTypeEnum.youtube:
         return ytdl(song.url, {
-          highWaterMark: 1 << 25,
-          filter: 'audioonly',
-          quality: 'highestaudio',
-          begin: fancyTimeFormat(begin),
+          begin: begin * 1000,
+          highWaterMark: 1 << 25
         });
       case SongTypeEnum.custom:
         return song.url;

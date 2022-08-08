@@ -1,11 +1,11 @@
 import EmptyCommand from '../../models/EmptyCommand';
 import querystring from 'querystring';
-import ytdl from 'ytdl-core-discord';
 import { fancyTimeFormat } from '../../helpers/fancyTime';
 import { SongTypeEnum } from '../../models/Channel/model';
 import ytpl from 'ytpl';
 import Search from '../../models/Search';
 import { MAX_SEARCH_POSITION, YOUTUBE_API } from '../../consts/app';
+import ytdl from 'ytdl-core';
 const searchYoutube = require('youtube-api-v3-search');
 
 class Play extends EmptyCommand {

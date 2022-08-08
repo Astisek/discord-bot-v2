@@ -1,5 +1,4 @@
 import { Message } from 'discord.js';
-import { Document } from 'mongoose';
 import Clear from '../actions/Clear';
 import Custom from '../actions/Custom';
 import Join from '../actions/Join';
