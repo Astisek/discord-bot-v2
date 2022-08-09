@@ -1,4 +1,4 @@
-import {Document, Model} from "mongoose";
+import { Document } from "mongoose";
 
 export interface IChannel extends Document {
   channelId: string;
@@ -9,6 +9,7 @@ export interface IChannel extends Document {
   repeat: boolean;
   skippedTime: number;
   autoPlay: boolean;
+  autoPlayPool: string[];
 }
 
 export enum SongTypeEnum {

@@ -20,6 +20,7 @@ const schema = new Schema<IChannel>({
   textChannel: { type: "String", required: true },
   voiceChannel: { type: "String", required: true },
   volume: { type: "Number", required: true },
+  autoPlayPool: [{ type: "String", required: true }],
 });
 
 const Channel = mongoose.model<IChannel>(SchemasEnum.CHANNEL, schema);

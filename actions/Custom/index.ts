@@ -1,7 +1,5 @@
-import { throws } from 'assert';
 import { ISong, SongTypeEnum } from '../../models/Channel/model';
 import EmptyCommand from '../../models/EmptyCommand';
-import MusicPlayer from '../../service/MusicPlayer';
 
 class Custom extends EmptyCommand {
   public execute = async () => {

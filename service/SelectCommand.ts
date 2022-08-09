@@ -1,4 +1,5 @@
 import { Message } from 'discord.js';
+import {Autoplay} from '../actions/Autoplay';
 import Clear from '../actions/Clear';
 import Custom from '../actions/Custom';
 import Join from '../actions/Join';
@@ -93,10 +94,10 @@ class ExecuteCommand {
       case "c":
         this.Command = Custom;
         break;
-      // case "autoplay":
-      // case "ap":
-      //   autoPlay(serverQueue)
-      //   break
+      case "autoplay":
+      case "ap":
+        this.Command = Autoplay;
+        break
       // case "help":
       //   help(message);
       //   break;
