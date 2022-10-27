@@ -23,4 +23,5 @@ client.on('message', (message) => {
   instance.checkMessage();
 });
 
+
 client.login(TOKEN);

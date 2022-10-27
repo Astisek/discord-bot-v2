@@ -1,10 +1,10 @@
-import { MAX_SEARCH_POSITION } from './../consts/app';
-import { Message } from 'discord.js';
-import Play from '../actions/Play';
-import { PREFIX } from '../consts/app';
-import Channel from '../models/Channel';
-import Search from '../models/Search';
-import ExecuteCommand from './SelectCommand';
+import { MAX_SEARCH_POSITION } from "./../consts/app";
+import { Message } from "discord.js";
+import Play from "../actions/Play";
+import { PREFIX } from "../consts/app";
+import Channel from "../models/Channel";
+import Search from "../models/Search";
+import ExecuteCommand from "./SelectCommand";
 
 class ChannelInstance {
   constructor(private message: Message) {}
@@ -17,13 +17,13 @@ class ChannelInstance {
   }
 
   private parseCommand = () => {
-    const content = this.message.content.replace(PREFIX, '');
-    return content.split(' ');
+    const content = this.message.content.replace(PREFIX, "");
+    return content.split(" ");
   };
   private getChannel = async () => {
     if (this.guildId) {
       const channel = await Channel.findOne({ channelId: this.guildId });
-      const voiceGuildId = this.message.member?.voice.channelId || '';
+      const voiceGuildId = this.message.member?.voice.channelId || "";
       if (channel) {
         channel.voiceChannel = voiceGuildId;
         channel.textChannel = this.message.channelId;
@@ -48,7 +48,9 @@ class ChannelInstance {
   };
 
   private get isCommand() {
-    return this.message.content.toLowerCase().startsWith(PREFIX);
+    return this.message.deleted
+      ? false
+      : this.message.content.toLowerCase().startsWith(PREFIX);
   }
 
   private checkSearchResults = async () => {
@@ -62,12 +64,18 @@ class ChannelInstance {
         const channel = await this.getChannel();
         const videoId = searchResult.results[id];
         if (channel) {
-          this.message.channel.messages.cache.find(el => el.id === searchResult.messageId)?.delete()
-          await new Play(channel, [`https://www.youtube.com/watch?v=${videoId}`], this.message).execute();
-          searchResult.delete()
-          channel.save()
+          this.message.channel.messages.cache
+            .find((el) => el.id === searchResult.messageId)
+            ?.delete();
+          await new Play(
+            channel,
+            [`https://www.youtube.com/watch?v=${videoId}`],
+            this.message
+          ).execute();
+          searchResult.delete();
+          channel.save();
         }
-      } 
+      }
     }
   };
 
