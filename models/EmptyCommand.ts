@@ -67,6 +67,7 @@ class EmptyCommand {
   protected connectToVoice = async () => {
     if (this.guild) {
       try {
+        if (!this.voiceConnection) this.channel.songs = [] 
         this.voiceConnection = joinVoiceChannel({
           channelId: this.channel.voiceChannel,
           guildId: this.guild.id,

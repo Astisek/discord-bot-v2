@@ -4,6 +4,8 @@ class Clear extends EmptyCommand {
   public execute = async () => {
     const songsLength = this.channel.songs.length
     this.channel.songs = songsLength ? [this.channel.songs[0]] : []
+
+    this.sendMessage(`:candle: Плейлист очищен`)
     this.logger('Playlist cleared')
   };
 }

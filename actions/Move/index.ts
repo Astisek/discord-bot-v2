@@ -6,10 +6,8 @@ class Move extends EmptyCommand {
   public execute = async () => {
     const prevPos = +this.args[0] - 1;
     const nextPos = +this.args[1] - 1;
-    console.log(prevPos, nextPos);
 
     if (isNaN(prevPos) || isNaN(nextPos)) return;
-    console.log(prevPos, nextPos);
 
     const songs = this.channel.songs;
 

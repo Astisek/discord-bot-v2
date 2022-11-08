@@ -9,10 +9,15 @@ import {
 import ytdl from "ytdl-core";
 
 import Channel from "../models/Channel";
+import Notification from "../service/Notification";
 
 import { IChannel, ISong, SongTypeEnum } from "../models/Channel/model";
 import { createFFmpegStream } from "./ffmpegStream";
 import { logger } from "./logger";
+import { EmbedCreater } from "./EmbedCreater";
+import { fancyTimeFormat } from "../helpers/fancyTime";
+import { createYouTubeUrl } from "../helpers/createYoutubeUrl";
+import Skip from "../actions/Skip";
 
 class MusicPlayer {
   constructor(
@@ -22,10 +27,9 @@ class MusicPlayer {
   ) {}
 
   public start = async () => {
-    const stream = this.streamSelection(
-      this.channel.songs[0],
-      this.channel.skippedTime
-    );
+    const currentSong = this.channel.songs[0];
+
+    const stream = this.streamSelection(currentSong, this.channel.skippedTime);
     this.logger(
       `Stream Selected ${`with skip time ${this.channel.skippedTime}`}`
     );
@@ -38,10 +42,14 @@ class MusicPlayer {
       this.logger("New Player Created");
     }
 
+    this.checkUrlOnAvailable(currentSong.url);
+
     const ffmpegStream = createFFmpegStream(stream, {
       seek: this.channel.skippedTime || 0,
       fmt: "s16le",
     });
+
+    ffmpegStream.on('error', e => console.log(e))
 
     const resource = createAudioResource(ffmpegStream, {
       inputType: StreamType.Raw,
@@ -54,6 +62,17 @@ class MusicPlayer {
     this.logger("Played");
   };
 
+  private async checkUrlOnAvailable(url: string) {
+    try {
+      await ytdl.getInfo(url);
+    } catch (e) {
+      Notification.send(this.channel, "Что-то пошло не так.");
+      this.skip(this.channel);
+      await this.channel.save();
+      await this.start();
+    }
+  }
+
   private endMusicHandler = async () => {
     const channel = (await Channel.findById(this.channel._id)) || this.channel;
     this.channel = channel;
@@ -64,6 +83,12 @@ class MusicPlayer {
       const autoplayTrack = await this.getAutoplayTrack();
       if (autoplayTrack) {
         this.channel.songs.push(autoplayTrack);
+        const { image, title, url, songLength } = autoplayTrack;
+        Notification.send(
+          this.channel,
+          undefined,
+          EmbedCreater.addSongEmbed(title, url, image || "", true, songLength)
+        );
         this.logger(
           `Autoplay added: ${autoplayTrack.url}, autoPlayPool lenght: ${this.channel.autoPlayPool.length}`
         );
@@ -71,8 +96,7 @@ class MusicPlayer {
     }
 
     if (!channel.repeat) {
-      this.logger("Deleted first");
-      this.channel.songs.shift();
+      this.skip(channel);
     }
 
     if (this.channel.songs.length) {
@@ -82,10 +106,15 @@ class MusicPlayer {
     this.channel.save();
   };
 
+  private skip = (channel: IChannel) => {
+    this.logger("Deleted first");
+    channel.songs.shift();
+  };
+
   private streamSelection = (song: ISong, begin: number = 0) => {
     switch (song.inputType) {
       case SongTypeEnum.youtube:
-        return ytdl(song.url, {
+        return ytdl(createYouTubeUrl(song.url), {
           begin: begin * 1000,
           highWaterMark: 1 << 25,
           filter: "audioonly",
@@ -105,7 +134,9 @@ class MusicPlayer {
       const lastSong = this.channel.songs[0];
       if (lastSong.inputType !== SongTypeEnum.youtube) return;
 
-      const { related_videos } = await ytdl.getInfo(lastSong.url);
+      const { related_videos } = await ytdl.getInfo(
+        createYouTubeUrl(lastSong.url)
+      );
       let videoId = 0;
 
       while (
@@ -131,7 +162,10 @@ class MusicPlayer {
         inputType: SongTypeEnum.youtube,
         songLength: +length_seconds,
       };
-    } catch (e) {}
+    } catch (e) {
+      Notification.send(this.channel, "Что-то пошло не так.");
+      logger.error(e);
+    }
   }
 }
 

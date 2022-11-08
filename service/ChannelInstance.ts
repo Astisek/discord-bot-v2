@@ -48,9 +48,10 @@ class ChannelInstance {
   };
 
   private get isCommand() {
-    return this.message.deleted
-      ? false
-      : this.message.content.toLowerCase().startsWith(PREFIX);
+    return (
+      this.message.deletable &&
+      this.message.content.toLowerCase().startsWith(PREFIX)
+    );
   }
 
   private checkSearchResults = async () => {
@@ -60,18 +61,29 @@ class ChannelInstance {
     const id = +this.message.content;
 
     if (searchResult) {
+      if (this.message.content === "c" || this.message.content === "cancel") {
+        searchResult.delete();
+        this.message.delete();
+        this.message.channel.messages.cache
+          .find((el) => el.id === searchResult.messageId)
+          ?.delete();
+        return;
+      }
+
       if (id <= MAX_SEARCH_POSITION && id >= 1) {
         const channel = await this.getChannel();
-        const videoId = searchResult.results[id];
+        const videoId = searchResult.results[id - 1];
         if (channel) {
           this.message.channel.messages.cache
             .find((el) => el.id === searchResult.messageId)
             ?.delete();
+          
           await new Play(
             channel,
             [`https://www.youtube.com/watch?v=${videoId}`],
             this.message
           ).execute();
+
           searchResult.delete();
           channel.save();
         }
