@@ -3,7 +3,7 @@ import EmptyCommand from '../../models/EmptyCommand';
 
 class Custom extends EmptyCommand {
   public execute = async () => {
-    const file = this.message.attachments.first();
+    const file = this.message?.attachments.first();
     const customUrl = this.args[0];
     if (!file && !customUrl) {
       this.sendMessage(':no_entry: Файл не найден :face_with_monocle: ');

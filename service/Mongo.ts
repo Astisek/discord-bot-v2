@@ -9,7 +9,7 @@ class Mongo {
   private connect = () => {
     mongoose.connect(this.url, {dbName: 'discord'}, (err) => {
       if (err) return console.log(err);
-      logger.debug(`Database connected!`)
+      logger.info(`Database connected!`)
     });
   };
 }

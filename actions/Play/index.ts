@@ -30,7 +30,7 @@ class Play extends EmptyCommand {
       await this.playSearch(this.args.join(" "));
     }
 
-    this.message.delete();
+    this.message?.delete();
     await this.startPlayerIfNeed();
   };
 
@@ -62,7 +62,7 @@ class Play extends EmptyCommand {
           url,
           image,
           songLength,
-          this.message.author.username
+          this.message?.author.username || ""
         );
       }
     } catch (e) {
@@ -167,17 +167,17 @@ class Play extends EmptyCommand {
       this.logger(`Play by search (${q})`);
 
       let userSearch = await Search.findOne({
-        author: this.message.member?.id,
+        author: this.message?.member?.id,
       });
       if (!userSearch) {
         userSearch = new Search({
-          author: this.message.member?.id,
+          author: this.message?.member?.id,
         });
       }
       userSearch.results = res.items.map((el: any) => el.id.videoId);
       userSearch.messageId = sendedEmbed?.id || "";
 
-      await userSearch.save();
+      await userSearch.update(userSearch);
     } catch (e) {
       this.onError(e);
     }

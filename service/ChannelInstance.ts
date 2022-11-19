@@ -27,7 +27,7 @@ class ChannelInstance {
       if (channel) {
         channel.voiceChannel = voiceGuildId;
         channel.textChannel = this.message.channelId;
-        await channel.save();
+        await channel.update(channel);
         return channel;
       }
 
@@ -85,7 +85,7 @@ class ChannelInstance {
           ).execute();
 
           searchResult.delete();
-          channel.save();
+          channel.update(channel);
         }
       }
     }

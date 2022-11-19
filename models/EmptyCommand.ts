@@ -12,7 +12,7 @@ class EmptyCommand {
   protected guild?: Guild;
   protected voiceConnection?: VoiceConnection;
 
-  constructor(protected channel: IChannel, protected args: string[], protected message: Message) {
+  constructor(protected channel: IChannel, protected args: string[], protected message?: Message) {
     const guild = client.guilds.cache.get(channel.channelId);
 
     if (guild) {

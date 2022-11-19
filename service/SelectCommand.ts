@@ -110,7 +110,7 @@ class ExecuteCommand {
       const command = new this.Command(this.channel, this.args, this.message);
       const postActions = await command?.execute();
       if (!postActions?.dontSave) {
-        await this.channel.save();
+        await this.channel.update(this.channel);
       }
     }
   };

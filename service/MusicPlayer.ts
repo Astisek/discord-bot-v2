@@ -68,7 +68,7 @@ class MusicPlayer {
     } catch (e) {
       Notification.send(this.channel, "Что-то пошло не так.");
       this.skip(this.channel);
-      await this.channel.save();
+      await this.channel.update(this.channel);
       await this.start();
     }
   }
@@ -103,7 +103,7 @@ class MusicPlayer {
       this.start();
     }
 
-    this.channel.save();
+    this.channel.update(this.channel);
   };
 
   private skip = (channel: IChannel) => {
