@@ -1,5 +1,5 @@
 import { IChannel } from './Channel/model';
-import { AudioPlayerPlayingState, getVoiceConnection, joinVoiceChannel, VoiceConnection, VoiceConnectionReadyState } from '@discordjs/voice';
+import { AudioPlayerPlayingState, getVoiceConnection, joinVoiceChannel, VoiceConnection, VoiceConnectionReadyState, VoiceConnectionStatus } from '@discordjs/voice';
 import { Guild, Message } from 'discord.js';
 import { client } from '..';
 import Notification from '../service/Notification';
@@ -7,6 +7,8 @@ import Discord from 'discord.js';
 import { ICommandPostActions } from '.';
 import MusicPlayer from '../service/MusicPlayer';
 import { logger } from '../service/logger';
+import BotMiddleware from '../service/BotMiddleware';
+import { SubscribeEnum } from '../interfaces/BotMiddleware';
 
 class EmptyCommand {
   protected guild?: Guild;
@@ -68,11 +70,24 @@ class EmptyCommand {
     if (this.guild) {
       try {
         if (!this.voiceConnection) this.channel.songs = [] 
+        // Connect
         this.voiceConnection = joinVoiceChannel({
           channelId: this.channel.voiceChannel,
           guildId: this.guild.id,
           adapterCreator: this.guild.voiceAdapterCreator,
         });
+
+        // Emit event
+        BotMiddleware.EmitEvent(SubscribeEnum.connectionStatus, this.channel.id, {
+          connected: true
+        })
+
+        // Ondisconnect event
+        this.voiceConnection.on(VoiceConnectionStatus.Disconnected, () => {
+          BotMiddleware.EmitEvent(SubscribeEnum.connectionStatus, this.channel.id, {
+            connected: false
+          })
+        })
       } catch (e) {
         this.onError(e)
       }
