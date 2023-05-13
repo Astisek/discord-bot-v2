@@ -9,18 +9,17 @@
 </head>
 
 <body>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.3/socket.io.js"
-    integrity="sha512-iWPnCISAd/J+ZacwV2mbNLCaPGRrRo5OS81lKTVPtRg1wGTC20Cfmp5Us5RcbLv42QLdbAWl0MI57yox5VecQg=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
-    const socket = io('http://localhost:8000/');
-    const fragment = new URLSearchParams(window.location.hash.slice(1));
-    const [accessToken, tokenType] = [fragment.get('access_token'), fragment.get('token_type')];
 
-    socket.emit('login', {
-      accessToken,
-      tokenType
-    })
+    if (window.ReactNativeWebView.postMessage) {
+      ReactNativeWebView.postMessage({});
+    }
+
+
+    // socket.emit('login', {
+    //   accessToken,
+    //   tokenType
+    // })
 
     // https://discord.com/api/oauth2/authorize?client_id=727482461977575424&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=token&scope=identify%20guilds%20email
   </script>

@@ -2,6 +2,8 @@ import { fancyTimeFormat } from '../../helpers/fancyTime';
 import EmptyCommand from '../../models/EmptyCommand';
 
 class Queue extends EmptyCommand {
+  protected static command: string[] = ["queue", "q"]
+
   public execute = async () => {
     if (!this.player || !this.channel.songs.length) {
       return

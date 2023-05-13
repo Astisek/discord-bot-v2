@@ -13,7 +13,10 @@ import { logger } from "../../service/logger";
 const searchYoutube = require("youtube-api-v3-search");
 
 class Play extends EmptyCommand {
+  protected static command: string[] = ["play", "p"]
+
   public execute = async () => {
+    if (!this.voiceConnection) this.channel.songs = [];
     await this.connectToVoice();
     this.logger("Connected to Voice");
     const url = this.args[0];

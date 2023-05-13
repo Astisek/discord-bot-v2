@@ -2,6 +2,7 @@ import EmptyCommand from '../../models/EmptyCommand';
 import MusicPlayer from '../../service/MusicPlayer';
 
 class Seek extends EmptyCommand {
+  protected static command: string[] = ["seek"]
   public execute = async () => {
     const timeArr = this.args[0].split(':');
     let seekTime = 0;

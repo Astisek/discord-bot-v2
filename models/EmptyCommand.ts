@@ -11,6 +11,8 @@ import BotMiddleware from '../service/BotMiddleware';
 import { SubscribeEnum } from '../interfaces/BotMiddleware';
 
 class EmptyCommand {
+  protected static command: string[] = []
+
   protected guild?: Guild;
   protected voiceConnection?: VoiceConnection;
 
@@ -23,6 +25,9 @@ class EmptyCommand {
       this.voiceConnection = getVoiceConnection(id);
     }
   }
+  public static getCommands() {
+    return this.command
+  } 
 
   public execute = async (): Promise<ICommandPostActions | void> => {
     console.log('empty command');
@@ -69,7 +74,6 @@ class EmptyCommand {
   protected connectToVoice = async () => {
     if (this.guild) {
       try {
-        if (!this.voiceConnection) this.channel.songs = [] 
         // Connect
         this.voiceConnection = joinVoiceChannel({
           channelId: this.channel.voiceChannel,

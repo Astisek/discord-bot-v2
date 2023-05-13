@@ -15,9 +15,7 @@ import { IChannel, ISong, SongTypeEnum } from "../models/Channel/model";
 import { createFFmpegStream } from "./ffmpegStream";
 import { logger } from "./logger";
 import { EmbedCreater } from "./EmbedCreater";
-import { fancyTimeFormat } from "../helpers/fancyTime";
 import { createYouTubeUrl } from "../helpers/createYoutubeUrl";
-import Skip from "../actions/Skip";
 
 class MusicPlayer {
   constructor(
@@ -41,8 +39,9 @@ class MusicPlayer {
       this.player.on("debug", (e) => console.log(e));
       this.logger("New Player Created");
     }
-
-    this.checkUrlOnAvailable(currentSong.url);
+    if (currentSong.inputType === SongTypeEnum.youtube) {
+      this.checkUrlOnAvailable(currentSong.url);
+    }
 
     const ffmpegStream = createFFmpegStream(stream, {
       seek: this.channel.skippedTime || 0,
@@ -81,7 +80,9 @@ class MusicPlayer {
 
     if (this.channel.autoPlay && this.channel.songs.length === 1) {
       const autoplayTrack = await this.getAutoplayTrack();
+      
       if (autoplayTrack) {
+        
         this.channel.songs.push(autoplayTrack);
         const { image, title, url, songLength } = autoplayTrack;
         Notification.send(
@@ -95,15 +96,15 @@ class MusicPlayer {
       }
     }
 
-    if (!channel.repeat) {
-      this.skip(channel);
+    if (!this.channel.repeat) {
+      this.skip(this.channel);
     }
 
     if (this.channel.songs.length) {
       this.start();
     }
-
-    this.channel.update(this.channel);
+    
+    this.channel.save()
   };
 
   private skip = (channel: IChannel) => {

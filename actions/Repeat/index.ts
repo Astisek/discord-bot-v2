@@ -1,6 +1,8 @@
 import EmptyCommand from '../../models/EmptyCommand';
 
 class Repeat extends EmptyCommand {
+  protected static command: string[] = ["repeat"]
+
   public execute = async () => {
     this.channel.repeat = !this.channel.repeat
 

@@ -1,6 +1,8 @@
 import EmptyCommand from "../../models/EmptyCommand";
 
 class Volume extends EmptyCommand {
+  protected static command: string[] = ["volume"]
+
   public execute = async () => {
     const newVolume = +this.args[0];
     if (isNaN(newVolume) || newVolume > 1000) {

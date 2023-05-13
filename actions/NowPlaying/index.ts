@@ -3,6 +3,8 @@ import { fancyTimeFormat } from '../../helpers/fancyTime';
 import EmptyCommand from '../../models/EmptyCommand';
 
 class NowPlaying extends EmptyCommand {
+  protected static command: string[] = ["nowplaying", "np"]
+
   public execute = async () => {
     const currentSong = this.channel.songs[0];
     if (!currentSong) {

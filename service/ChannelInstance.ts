@@ -93,9 +93,9 @@ class ChannelInstance {
 
   public checkMessage = async () => {
     if (this.checkAuthor) return;
-
+    
     await this.checkSearchResults();
-
+    
     if (this.isCommand) {
       const [command, ...args] = this.parseCommand();
       const channel = await this.getChannel();

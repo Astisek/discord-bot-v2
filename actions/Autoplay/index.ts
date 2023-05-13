@@ -2,6 +2,8 @@ import EmptyCommand from "../../models/EmptyCommand";
 import Notification from "../../service/Notification";
 
 export class Autoplay extends EmptyCommand {
+  protected static command = ["autoplay", "ap"]
+
   public execute = async () => {
     this.channel.autoPlay = !this.channel.autoPlay
 

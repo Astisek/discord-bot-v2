@@ -3,6 +3,8 @@ import MusicPlayer from '../../service/MusicPlayer';
 import Skip from '../Skip';
 
 class Move extends EmptyCommand {
+  protected static command: string[] = ["move", "m"]
+
   public execute = async () => {
     const prevPos = +this.args[0] - 1;
     const nextPos = +this.args[1] - 1;

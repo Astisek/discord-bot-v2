@@ -2,6 +2,8 @@ import { ISong, SongTypeEnum } from '../../models/Channel/model';
 import EmptyCommand from '../../models/EmptyCommand';
 
 class Custom extends EmptyCommand {
+  protected static command: string[] = ["custom", "c"]
+
   public execute = async () => {
     const file = this.message?.attachments.first();
     const customUrl = this.args[0];

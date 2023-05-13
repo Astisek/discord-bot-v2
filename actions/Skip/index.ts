@@ -2,6 +2,8 @@ import EmptyCommand from "../../models/EmptyCommand";
 import MusicPlayer from "../../service/MusicPlayer";
 
 class Skip extends EmptyCommand {
+  protected static command: string[] = ["skip", "s"]
+
   public execute = async () => {
     try {
       this.logger(`Skip (current length: ${this.channel.songs.length})`);
