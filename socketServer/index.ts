@@ -11,11 +11,15 @@ import BotMiddleware from "../service/BotMiddleware";
 import { validateChannelId } from "../helpers/validateServer";
 import { SubscribeEnum } from "../interfaces/BotMiddleware";
 import { BACKEND_PORT } from "../consts/app";
+import { appRouter } from "./appController";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const server = http.createServer(app);
 
 app.use(express.static(__dirname + "/static/"));
+app.use(cookieParser())
+app.use('/api', appRouter)
 
 export const io = new Server(server, {
   cors: {

@@ -59,6 +59,14 @@ class BotMiddleware {
     });
   };
 
+  public static HaveChannel = async (channelIds: string[]) => {
+    try {
+      return await Channel.find({ channelId: { $in: channelIds } })
+    } catch (e) {
+      return []
+    }
+  }
+
   // Private
   private static getChannel = async (channelId: string) => {
     return await Channel.findOne({ channelId });
